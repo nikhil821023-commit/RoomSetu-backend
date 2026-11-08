@@ -1,0 +1,24 @@
+-- Moved from data.sql (Phase 6) into a real migration — data.sql runs on every
+-- restart regardless of what's already in the table, which risks duplicate rows
+-- outside of a fresh dev database. A migration runs exactly once, ever.
+
+INSERT INTO support_faq_entries (question, answer, keywords) VALUES
+('How long does ID verification take?',
+ 'Verification is manually reviewed and usually completed within 24 hours of submission.',
+ 'verification,verify,id,aadhaar,pending,review,long,time'),
+
+('How do I cancel a match request?',
+ 'You can''t cancel a sent request once it''s pending, but if the other person doesn''t respond within a few days it will simply stay pending — you''re free to keep browsing other matches in the meantime.',
+ 'cancel,match,request,pending,withdraw'),
+
+('Is my ID document stored securely?',
+ 'Yes — identity documents are stored encrypted and separately from your regular profile data, and are only accessible during the verification review process.',
+ 'id,document,secure,storage,privacy,safe,data'),
+
+('How does the compatibility score work?',
+ 'It''s a weighted score based on shared lifestyle answers you and the other person gave — sleep schedule, food preference, cleanliness, budget overlap, and work-from-home habits. Tap any match to see the full breakdown.',
+ 'compatibility,score,percentage,match,how,work,calculated'),
+
+('What happens if I report a fake listing?',
+ 'Your report goes into a review queue. If enough independent reports come in on the same listing, it''s automatically pulled from the live feed pending manual review.',
+ 'report,fake,scam,fraud,listing,flag');
