@@ -1,0 +1,21 @@
+# Active only when SPRING_PROFILES_ACTIVE=prod (set on the host, never locally).
+spring:
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+  datasource:
+    hikari:
+      maximum-pool-size: 5
+
+server:
+  port: ${PORT:8080}
+  # Render sits behind a proxy. Without this, every visitor looks like one IP and the
+  # OTP rate limit would lock everyone out after 15 requests an hour.
+  forward-headers-strategy: native
+
+roomsetu:
+  cors:
+    # No default on purpose: production refuses to start without it.
+    allowed-origin-patterns: ${CORS_ALLOWED_ORIGINS}

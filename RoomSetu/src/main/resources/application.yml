@@ -1,4 +1,11 @@
 
+
+
+
+
+
+
+<<<<<<< HEAD
 # ==========================================
 # SERVER
 # ==========================================
@@ -61,4 +68,4 @@ roomsetu.sms.provider=${SMS_PROVIDER:fast2sms}
 roomsetu.sms.fast2sms.api-key=${FAST2SMS_API_KEY:}
 roomsetu.sms.msg91.api-key=${MSG91_API_KEY:}
   
-  # ==========================================
+
