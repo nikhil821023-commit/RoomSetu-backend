@@ -23,13 +23,13 @@ import java.util.Map;
 @ConditionalOnProperty(name = "roomsetu.sms.provider", havingValue = "fast2sms")
 public class Fast2SmsGateway implements SmsGateway {
 
-    @Value("${roomsetu.sms.enabled}")
+    @Value("${roomsetu.sms.enabled:false}")
     private boolean enabled;
 
     @Value("${roomsetu.sms.fast2sms.api-key:}")
     private String apiKey;
 
-    @Value("${roomsetu.sms.fast2sms.base-url}")
+    @Value("${roomsetu.sms.fast2sms.base-url:https://www.fast2sms.com/dev/bulkV2}")
     private String baseUrl;
 
     private final HttpClient httpClient = HttpClient.newBuilder()
