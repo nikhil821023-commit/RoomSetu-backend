@@ -3,6 +3,7 @@ package com.roomsetu.ai;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
@@ -19,12 +20,18 @@ import java.util.Optional;
  * and it doesn't justify pulling in spring-webflux just for one integration.
  */
 @Component
+@ConditionalOnProperty(
+        prefix = "roomsetu.ai",
+        name = "enabled",
+        havingValue = "true",
+        matchIfMissing = false
+)
 public class AnthropicAiTextClient implements AiTextClient {
 
     @Value("${roomsetu.ai.enabled:false}")
     private boolean enabled;
 
-    @Value("${roomsetu.ai.api-key}")
+    @Value("${roomsetu.ai.api-key:}")
     private String apiKey;
 
     @Value("${roomsetu.ai.model:claude-sonnet-4-5}")
