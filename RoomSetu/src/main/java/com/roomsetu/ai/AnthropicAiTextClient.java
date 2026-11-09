@@ -21,19 +21,19 @@ import java.util.Optional;
 @Component
 public class AnthropicAiTextClient implements AiTextClient {
 
-    @Value("${roomsetu.ai.enabled}")
+    @Value("${roomsetu.ai.enabled:false}")
     private boolean enabled;
 
     @Value("${roomsetu.ai.api-key}")
     private String apiKey;
 
-    @Value("${roomsetu.ai.model}")
+    @Value("${roomsetu.ai.model:claude-sonnet-4-5}")
     private String model;
 
-    @Value("${roomsetu.ai.timeout-ms}")
+    @Value("${roomsetu.ai.timeout-ms:10000}")
     private long timeoutMs;
 
-    @Value("${roomsetu.ai.max-tokens}")
+    @Value("${roomsetu.ai.max-tokens:500}")
     private int maxTokens;
 
     private final HttpClient httpClient = HttpClient.newBuilder()
