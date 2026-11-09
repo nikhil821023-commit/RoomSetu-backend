@@ -2,19 +2,20 @@ package com.roomsetu.mail;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
+/** Used for every provider value except "brevo". */
 @Component
-@ConditionalOnProperty(name = "roomsetu.mail.provider", havingValue = "smtp", matchIfMissing = true)
+@ConditionalOnExpression("!'${roomsetu.mail.provider:smtp}'.trim().equalsIgnoreCase('brevo')")
 public class SmtpEmailSender implements EmailSender {
 
-    @Value("${roomsetu.mail.enabled}")
+    @Value("${roomsetu.mail.enabled:false}")
     private boolean enabled;
 
-    @Value("${roomsetu.mail.from}")
+    @Value("${roomsetu.mail.from:}")
     private String from;
 
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
@@ -41,7 +42,7 @@ public class SmtpEmailSender implements EmailSender {
 
         try {
             SimpleMailMessage msg = new SimpleMailMessage();
-            msg.setFrom(from);
+            msg.setFrom(from.trim());
             msg.setTo(to);
             msg.setSubject(subject);
             msg.setText(body);
