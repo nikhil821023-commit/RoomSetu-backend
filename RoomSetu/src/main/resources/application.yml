@@ -35,6 +35,9 @@ roomsetu.mail.brevo.api-key=${BREVO_API_KEY:}
 
 roomsetu.otp.expiry-seconds=${OTP_EXPIRY_SECONDS:300}
 roomsetu.otp.console-fallback=${OTP_CONSOLE_FALLBACK:true}
+
+roomsetu.jwt.secret=${ROOMSETU_JWT_SECRET}
+roomsetu.jwt.expiration-ms=${ROOMSETU_JWT_EXPIRATION_MS:86400000}
   
   
 roomsetu.sms.enabled=${ROOMSETU_SMS_ENABLED:false}
