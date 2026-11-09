@@ -16,7 +16,7 @@ import java.util.List;
 @Configuration
 public class CorsConfig {
 
-    @Value("${roomsetu.cors.allowed-origin-patterns}")
+    @Value("${roomsetu.cors.allowed-origin-patterns:http://localhost:3000}")
     private List<String> allowedOriginPatterns;
 
     @Bean
