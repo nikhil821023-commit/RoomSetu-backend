@@ -81,7 +81,7 @@ public class PublicProfileService {
                 .smokes(profile.getSmokes())
                 .drinks(profile.getDrinks())
                 .hasPets(profile.getHasPets())
-                .phoneVerified(true) // every account signs in with a phone OTP
+                .phoneVerified(user.getPhone() != null)
                 .workEmailDomain(EmailDomains.verifiedDomain(user))
                 .averageRating(reviewRepository.averageRatingFor(targetId))
                 .reviewCount(reviewRepository.countByRevieweeId(targetId))
