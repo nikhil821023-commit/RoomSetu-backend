@@ -21,4 +21,5 @@ public class DiscoveryCardResponse {
     private Integer compatibilityScore;
     private Map<String, Integer> scoreBreakdown;
     private String bio;
+    private String distanceLabel;   // band like "2-5 km", or null if either side has no saved location
 }

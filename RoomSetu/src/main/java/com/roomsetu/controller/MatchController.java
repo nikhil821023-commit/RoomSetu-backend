@@ -19,11 +19,13 @@ public class MatchController {
     public MatchController(MatchService matchService) {
         this.matchService = matchService;
     }
-
     @GetMapping("/discover")
-    public ResponseEntity<List<DiscoveryCardResponse>> discover(@AuthenticationPrincipal Long userId) {
-        return ResponseEntity.ok(matchService.discover(userId));
+    public ResponseEntity<List<DiscoveryCardResponse>> discover(@AuthenticationPrincipal Long userId,
+                                                                @RequestParam(defaultValue = "10") double radiusKm) {
+        return ResponseEntity.ok(matchService.discover(userId, radiusKm));
     }
+
+
 
     @PostMapping("/matches/request/{targetUserId}")
     public ResponseEntity<MatchResponse> requestMatch(@AuthenticationPrincipal Long requesterId,

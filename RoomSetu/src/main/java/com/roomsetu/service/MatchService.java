@@ -9,9 +9,11 @@ import com.roomsetu.repository.MatchRepository;
 import com.roomsetu.repository.ProfileRepository;
 import com.roomsetu.repository.UserRepository;
 import com.roomsetu.util.EmailDomains;
+import com.roomsetu.util.Geo;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -22,7 +24,9 @@ public class MatchService {
     private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
     private final CompatibilityService compatibilityService;
-    private final BlockService blockService; // Phase 3
+    private final BlockService blockService;
+    private record Scored(DiscoveryCardResponse card, Double km) {}
+
 
 
     public MatchService(MatchRepository matchRepository,
@@ -41,21 +45,48 @@ public class MatchService {
      * Ranked discovery feed: every profile in the same locality, minus people
      * already matched with (in either direction), sorted by compatibility score descending.
      */
+
     public List<DiscoveryCardResponse> discover(Long currentUserId) {
+        return discover(currentUserId, 10);
+    }
+
+    public List<DiscoveryCardResponse> discover(Long currentUserId, double radiusKm) {
         Profile myProfile = profileRepository.findByUserId(currentUserId)
                 .orElseThrow(() -> new IllegalArgumentException("Complete your profile before browsing matches"));
 
+        boolean iHavePin = myProfile.getLatitude() != null && myProfile.getLongitude() != null;
+        double radius = Math.max(1, Math.min(radiusKm, 100));
         List<Long> alreadyMatchedIds = matchRepository.findMatchedUserIds(currentUserId);
 
-        return profileRepository.findAll().stream()
-                .filter(p -> !p.getUser().getId().equals(currentUserId))
-                .filter(p -> !alreadyMatchedIds.contains(p.getUser().getId()))
-                .filter(p -> !blockService.isBlockedEitherDirection(currentUserId, p.getUser().getId())) // Phase 3
-                .filter(p -> p.getLocality() != null
-                        && p.getLocality().equalsIgnoreCase(myProfile.getLocality()))
-                .map(candidate -> toCard(myProfile, candidate))
-                .sorted(Comparator.comparing(DiscoveryCardResponse::getCompatibilityScore).reversed())
-                .toList();
+        List<Scored> scored = new ArrayList<>();
+        for (Profile p : profileRepository.findAll()) {
+            Long otherId = p.getUser().getId();
+            if (otherId.equals(currentUserId) || alreadyMatchedIds.contains(otherId)) continue;
+            if (blockService.isBlockedEitherDirection(currentUserId, otherId)) continue;
+
+            Double km = null;
+            if (iHavePin && p.getLatitude() != null && p.getLongitude() != null) {
+                km = Geo.haversineKm(myProfile.getLatitude(), myProfile.getLongitude(),
+                        p.getLatitude(), p.getLongitude());
+            }
+
+            // In if both are pinned and close, or they typed the same locality (the old rule).
+            boolean nearby = km != null && km <= radius;
+            boolean sameLocality = p.getLocality() != null
+                    && p.getLocality().equalsIgnoreCase(myProfile.getLocality());
+            if (!nearby && !sameLocality) continue;
+
+            DiscoveryCardResponse card = toCard(myProfile, p);
+            card.setDistanceLabel(km == null ? null : Geo.distanceLabel(km));
+            scored.add(new Scored(card, km));
+        }
+
+        // Best compatibility first. Among equals, nearer first.
+        scored.sort(Comparator
+                .comparing((Scored s) -> s.card().getCompatibilityScore()).reversed()
+                .thenComparing(s -> s.km(), Comparator.nullsLast(Comparator.naturalOrder())));
+
+        return scored.stream().map(Scored::card).toList();
     }
 
     private DiscoveryCardResponse toCard(Profile myProfile, Profile candidate) {

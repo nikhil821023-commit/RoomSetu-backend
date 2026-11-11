@@ -24,6 +24,11 @@ public class ProfileService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        if (req.getBudgetMin() != null && req.getBudgetMax() != null
+                && req.getBudgetMin() > req.getBudgetMax()) {
+            throw new IllegalArgumentException("Minimum budget can't be higher than the maximum");
+        }
+
         Profile profile = profileRepository.findByUserId(userId)
                 .orElseGet(() -> Profile.builder().user(user).build());
 
